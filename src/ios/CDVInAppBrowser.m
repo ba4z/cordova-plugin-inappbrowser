@@ -152,6 +152,8 @@
     //if (browserOptions.closebuttoncaption != nil) {
         [self.inAppBrowserViewController setCloseButtonTitle:browserOptions.closebuttoncaption];
     //}
+    [self.inAppBrowserViewController setDialogTitle:browserOptions.dialogtitle];
+    
     // Set Presentation Style
     UIModalPresentationStyle presentationStyle = UIModalPresentationFullScreen; // default
     if (browserOptions.presentationstyle != nil) {
@@ -612,7 +614,7 @@
     [self.titleLabel setFont:[UIFont fontWithName:@"Avenir" size:16]];
     [self.titleLabel setBackgroundColor:[UIColor clearColor]];
     [self.titleLabel setTextColor:[UIColor blackColor]];
-    [self.titleLabel setText:@"This is The Browser Title That Never Ends It Just Goes On And On My Friend"];
+    [self.titleLabel setText:@"BOO"];
     [self.titleLabel setTextAlignment:NSTextAlignmentCenter];
 
     self.titleButton = [[UIBarButtonItem alloc] initWithCustomView:self.titleLabel];
@@ -647,6 +649,11 @@
     NSMutableArray* items = [self.toolbar.items mutableCopy];
     [items replaceObjectAtIndex:0 withObject:self.closeButton];
     [self.toolbar setItems:items];
+}
+
+- (void)setDialogTitle:(NSString*)title
+{
+    [self.titleLabel setText:title];
 }
 
 - (void)showLocationBar:(BOOL)show
@@ -964,6 +971,7 @@
         self.location = YES;
         self.toolbar = YES;
         self.closebuttoncaption = nil;
+        self.dialogtitle = @"";
         self.toolbarposition = kInAppBrowserToolbarBarPositionBottom;
         self.clearcache = NO;
         self.clearsessioncache = NO;
