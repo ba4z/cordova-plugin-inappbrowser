@@ -140,6 +140,7 @@
         NSString* originalUA = [CDVUserAgentUtil originalUserAgent];
         self.inAppBrowserViewController = [[CDVInAppBrowserViewController alloc] initWithUserAgent:originalUA prevUserAgent:[self.commandDelegate userAgent] browserOptions: browserOptions];
         self.inAppBrowserViewController.navigationDelegate = self;
+        self.inAppBrowserViewController.view.backgroundColor = [UIColor whiteColor];
 
         if ([self.viewController conformsToProtocol:@protocol(CDVScreenOrientationDelegate)]) {
             self.inAppBrowserViewController.orientationDelegate = (UIViewController <CDVScreenOrientationDelegate>*)self.viewController;
@@ -148,9 +149,9 @@
 
     [self.inAppBrowserViewController showLocationBar:browserOptions.location];
     [self.inAppBrowserViewController showToolBar:browserOptions.toolbar :browserOptions.toolbarposition];
-    if (browserOptions.closebuttoncaption != nil) {
+    //if (browserOptions.closebuttoncaption != nil) {
         [self.inAppBrowserViewController setCloseButtonTitle:browserOptions.closebuttoncaption];
-    }
+    //}
     // Set Presentation Style
     UIModalPresentationStyle presentationStyle = UIModalPresentationFullScreen; // default
     if (browserOptions.presentationstyle != nil) {
@@ -506,6 +507,7 @@
 
     [self.view addSubview:self.webView];
     [self.view sendSubviewToBack:self.webView];
+    self.navigationController.view.backgroundColor = [UIColor whiteColor];
 
     self.webView.delegate = _webViewDelegate;
     self.webView.backgroundColor = [UIColor whiteColor];
@@ -534,12 +536,17 @@
     [self.spinner stopAnimating];
 
     self.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(close)];
+    [self.closeButton setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                              [UIFont fontWithName:@"Avenir" size:16.0], NSFontAttributeName,
+                                              [UIColor blackColor], NSForegroundColorAttributeName,
+                                              nil]
+                                    forState:UIControlStateNormal];
     self.closeButton.enabled = YES;
 
     UIBarButtonItem* flexibleSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
     UIBarButtonItem* fixedSpaceButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    fixedSpaceButton.width = 20;
+    fixedSpaceButton.width = 1;
 
     float toolbarY = toolbarIsAtBottom ? self.view.bounds.size.height - TOOLBAR_HEIGHT : 0.0;
     CGRect toolbarFrame = CGRectMake(0.0, toolbarY, self.view.bounds.size.width, TOOLBAR_HEIGHT);
@@ -548,7 +555,7 @@
     self.toolbar.alpha = 1.000;
     self.toolbar.autoresizesSubviews = YES;
     self.toolbar.autoresizingMask = toolbarIsAtBottom ? (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin) : UIViewAutoresizingFlexibleWidth;
-    self.toolbar.barStyle = UIBarStyleBlackOpaque;
+    self.toolbar.barStyle = UIBarStyleDefault;
     self.toolbar.clearsContextBeforeDrawing = NO;
     self.toolbar.clipsToBounds = NO;
     self.toolbar.contentMode = UIViewContentModeScaleToFill;
@@ -556,6 +563,8 @@
     self.toolbar.multipleTouchEnabled = NO;
     self.toolbar.opaque = NO;
     self.toolbar.userInteractionEnabled = YES;
+    self.toolbar.barTintColor = [UIColor whiteColor];
+    self.toolbar.tintColor = [UIColor blackColor];
 
     CGFloat labelInset = 5.0;
     float locationBarY = toolbarIsAtBottom ? self.view.bounds.size.height - FOOTER_HEIGHT : self.view.bounds.size.height - LOCATIONBAR_HEIGHT;
@@ -599,7 +608,17 @@
     self.backButton.enabled = YES;
     self.backButton.imageInsets = UIEdgeInsetsZero;
 
-    [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.backButton, fixedSpaceButton, self.forwardButton]];
+    self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0 , 11.0f, self.view.frame.size.width-90, 21.0f)];
+    [self.titleLabel setFont:[UIFont fontWithName:@"Avenir" size:16]];
+    [self.titleLabel setBackgroundColor:[UIColor clearColor]];
+    [self.titleLabel setTextColor:[UIColor blackColor]];
+    [self.titleLabel setText:@"This is The Browser Title That Never Ends It Just Goes On And On My Friend"];
+    [self.titleLabel setTextAlignment:NSTextAlignmentCenter];
+
+    self.titleButton = [[UIBarButtonItem alloc] initWithCustomView:self.titleLabel];
+    self.titleButton.imageInsets = UIEdgeInsetsZero;
+
+    [self.toolbar setItems:@[self.closeButton, flexibleSpaceButton, self.titleButton, flexibleSpaceButton, self.backButton, fixedSpaceButton, self.forwardButton]];
 
     self.view.backgroundColor = [UIColor grayColor];
     [self.view addSubview:self.toolbar];
@@ -617,9 +636,13 @@
     // the advantage of using UIBarButtonSystemItemDone is the system will localize it for you automatically
     // but, if you want to set this yourself, knock yourself out (we can't set the title for a system Done button, so we have to create a new one)
     self.closeButton = nil;
-    self.closeButton = [[UIBarButtonItem alloc] initWithTitle:title style:UIBarButtonItemStyleBordered target:self action:@selector(close)];
+    self.closeButton = [[UIBarButtonItem alloc] initWithTitle:@"✕" style:UIBarButtonItemStyleBordered target:self action:@selector(close)];
     self.closeButton.enabled = YES;
-    self.closeButton.tintColor = [UIColor colorWithRed:60.0 / 255.0 green:136.0 / 255.0 blue:230.0 / 255.0 alpha:1];
+    [self.closeButton setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                          [UIFont fontWithName:@"Avenir" size:16.0], NSFontAttributeName,
+                                          [UIColor blackColor], NSForegroundColorAttributeName,
+                                          nil]
+                                forState:UIControlStateNormal];
 
     NSMutableArray* items = [self.toolbar.items mutableCopy];
     [items replaceObjectAtIndex:0 withObject:self.closeButton];
